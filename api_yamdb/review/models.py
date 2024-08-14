@@ -5,8 +5,6 @@ from .validators import validate_year
 
 User = get_user_model()
 
-User = get_user_model()
-
 
 class Category(models.Model):
     """Модель категорий"""
@@ -82,6 +80,7 @@ class GenreTitle(models.Model):
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, verbose_name="Произведение"
     )
+
 
 class Review(models.Model):
     title = models.ForeignKey(
