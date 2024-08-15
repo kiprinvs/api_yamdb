@@ -118,7 +118,7 @@ class Review(models.Model):
     
 
 class Comment(models.Model):
-     """Модель для создания комментариев к отзывам."""
+    """Модель для создания комментариев к отзывам."""
     review = models.ForeignKey(
         Review, 
         on_delete=models.CASCADE,
@@ -143,5 +143,4 @@ class Comment(models.Model):
         ordering = ['-pub_date']
 
     def __str__(self):
-        return f'{self.author} - {self.review}'    
-    
+        return f'{self.author} - {self.review}'
