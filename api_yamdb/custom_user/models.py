@@ -1,5 +1,8 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+
+from .validators import username_me_validator
 
 MAX_LENGTH_CHAR_FIELD = 128
 
@@ -19,7 +22,8 @@ class CustomUser(AbstractUser):
     username = models.CharField(
         max_length=MAX_LENGTH_CHAR_FIELD,
         unique=True,
-        verbose_name='Отображаемое имя',
+        verbose_name='Имя пользователя',
+        validators=(username_me_validator, UnicodeUsernameValidator()),
     )
     email = models.EmailField(
         max_length=MAX_LENGTH_CHAR_FIELD,
@@ -47,10 +51,24 @@ class CustomUser(AbstractUser):
         default=RoleForUsers.USER,
     )
 
+    @property
+    def is_moderator(self):
+        return self.role == self.MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == self.ADMIN or self.is_staff
+
+    def __str__(self):
+        return self.username
+
     class Meta:
         verbose_name = 'Пользователь',
         verbose_name_plural = 'Пользователи',
         ordering = ('id',)
-
-    def __str__(self):
-        return self.username
+        constraints = [
+            models.UniqueConstraint(
+                fields=['username', 'email'],
+                name='unique_username_email'
+            ),
+        ]
