@@ -8,6 +8,6 @@ def validate_year(value):
     
 
 def validate_unique_review(author, title_id):
-    from review.models import Review  # Импорт внутри функции
+    from review.models import Review 
     if Review.objects.filter(author=author, title_id=title_id).exists():
         raise ValidationError('Вы уже оставили отзыв на это произведение.')
