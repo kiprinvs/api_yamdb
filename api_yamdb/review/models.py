@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from .constants import MAX_NAME_LENGTH
+from django.core.validators import MinValueValidator, MaxValueValidator
 from .validators import validate_year
 
 User = get_user_model()
@@ -100,6 +101,10 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         auto_now_add=True, 
         verbose_name='Дата публикации'
+    )
+    score = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        verbose_name='Оценка'
     )
 
     class Meta:
