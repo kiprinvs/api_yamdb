@@ -1,9 +1,9 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from review.models import Review, Comment
 from api.serializers import ReviewSerializer, CommentSerializer
 from api.permissions import IsAuthorOrReadOnly
 from review.validators import validate_unique_review
-from .permissions import IsAuthenticatedOrReadOnly
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -19,13 +19,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title_id = request.data.get('title')
         validate_unique_review(author, title_id)
         return super().create(request, *args, **kwargs)
-    
-    
+
+
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)    
-    
+        serializer.save(author=self.request.user)
