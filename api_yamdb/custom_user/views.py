@@ -10,17 +10,17 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
 from .permissions import IsAdmin
-from .serializers import TokenSerializer, UserSingupSerializer, UserSerializer
+from .serializers import TokenSerializer, UserSignupSerializer, UserSerializer
 
 User = get_user_model()
 
 
-class SingupView(views.APIView):
+class SignupView(views.APIView):
     """Регистрация пользователя."""
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        serializer = UserSingupSerializer(data=request.data)
+        serializer = UserSignupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user, created = User.objects.get_or_create(
             username=serializer.validated_data.get('username'),
