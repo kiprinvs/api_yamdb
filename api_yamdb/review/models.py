@@ -15,7 +15,6 @@ class Category(models.Model):
     slug = models.SlugField(unique=True, verbose_name="Слаг")
 
     class Meta:
-        abstract = True
         verbose_name = "категория"
         verbose_name_plural = "Категории"
 
@@ -31,7 +30,6 @@ class Genre(models.Model):
     slug = models.SlugField(unique=True, verbose_name="Слаг")
 
     class Meta:
-        abstract = True
         verbose_name = "жанр"
         verbose_name_plural = "Жанры"
 
