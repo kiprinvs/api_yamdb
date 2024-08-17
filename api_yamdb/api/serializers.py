@@ -39,7 +39,8 @@ class TitleSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if "year" in data:
             if datetime.datetime.now().year < data["year"]:
-                raise ValidationError('Год публикации произведения не может быть больше текущего!')
+                raise ValidationError(
+                    'Год публикации не может быть больше текущего!')
         return data
 
     def create(self, validated_data):
