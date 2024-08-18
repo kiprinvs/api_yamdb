@@ -26,7 +26,7 @@ python manage.py migrate
 
 
 5. Импорт csv файлов  
-??  
+python manage.py import_csv
 
 
 6. Запуск  
