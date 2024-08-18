@@ -39,7 +39,7 @@ class Genre(models.Model):
 
 class Title(models.Model):
     """Модель публикаций."""
-
+    
     name = models.CharField(
         max_length=MAX_NAME_LENGTH, verbose_name="Название"
     )
@@ -72,7 +72,7 @@ class Title(models.Model):
 
 class GenreTitle(models.Model):
     """Модель многие ко многим, связывает публикации и жанры."""
-
+    
     genre = models.ForeignKey(
         Genre, on_delete=models.CASCADE, verbose_name="Жанр"
     )
@@ -83,8 +83,9 @@ class GenreTitle(models.Model):
 
 class Review(models.Model):
     """Модель для создания отзывов на произведения."""
+    
     title = models.ForeignKey(
-        'Title', 
+        Title, 
         on_delete=models.CASCADE, 
         related_name='reviews',
         verbose_name='Произведение'
@@ -113,10 +114,11 @@ class Review(models.Model):
 
     def __str__(self):
         return f'{self.author} - {self.title}'
-    
+
 
 class Comment(models.Model):
     """Модель для создания комментариев к отзывам."""
+    
     review = models.ForeignKey(
         Review, 
         on_delete=models.CASCADE,
