@@ -22,7 +22,7 @@ class SignupView(views.APIView):
     def post(self, request):
         serializer = UserSignupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user, created = User.objects.get_or_create(
+        user, _ = User.objects.get_or_create(
             username=serializer.validated_data.get('username'),
             email=serializer.validated_data.get('email'),
         )
