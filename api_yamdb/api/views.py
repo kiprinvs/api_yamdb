@@ -38,6 +38,9 @@ class TitleViewSet(viewsets.ModelViewSet):
     ordering_fields = ("name", "year")
     http_method_names = ["get", "post", "patch", "delete"]
 
+    # def perform_create(self, serializer):
+    #     serializer.save()
+        
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
