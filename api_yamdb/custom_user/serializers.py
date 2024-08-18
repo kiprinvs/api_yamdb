@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.db import IntegrityError
 from rest_framework import serializers
 
 User = get_user_model()
@@ -14,23 +15,24 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
-class UserSignupSerializer(serializers.ModelSerializer):
+class UserSignupSerializer(UserSerializer):
 
-    class Meta:
-        Model = User
-        fields = ('username', 'email')
-
-    def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError(
-                f'Имя пользователя {value} уже используется'
-            )
-
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError(
-                f'email {value} уже используется'
-            )
+    def create(self, validated_data):
+        email = validated_data.get('email')
+        username = validated_data.get('username')
+        try:
+            user, _ = User.objects.get_or_create(username=username,
+                                                 email=email)
+        except IntegrityError:
+            if User.objects.filter(username=username).first():
+                raise serializers.ValidationError(
+                    f'Имя пользователя {username} уже используется'
+                )
+            else:
+                raise serializers.ValidationError(
+                    f'email {email} уже используется'
+                )
+        return user
 
 
 class TokenSerializer(serializers.Serializer):

@@ -4,7 +4,8 @@ from django.db import models
 
 from .validators import username_me_validator
 
-MAX_LENGTH_CHAR_FIELD = 128
+MAX_LENGTH_NAME = 150
+MAX_LENGTH_EMAIL = 254
 
 
 class CustomUser(AbstractUser):
@@ -20,23 +21,23 @@ class CustomUser(AbstractUser):
         USER = 'USER', 'user'
 
     username = models.CharField(
-        max_length=MAX_LENGTH_CHAR_FIELD,
+        max_length=MAX_LENGTH_NAME,
         unique=True,
         verbose_name='Имя пользователя',
         validators=(username_me_validator, UnicodeUsernameValidator()),
     )
     email = models.EmailField(
-        max_length=MAX_LENGTH_CHAR_FIELD,
+        max_length=MAX_LENGTH_EMAIL,
         verbose_name='Почта',
         unique=True,
     )
     first_name = models.CharField(
-        max_length=MAX_LENGTH_CHAR_FIELD,
+        max_length=MAX_LENGTH_NAME,
         verbose_name='Имя',
         blank=True,
     )
     last_name = models.CharField(
-        max_length=MAX_LENGTH_CHAR_FIELD,
+        max_length=MAX_LENGTH_NAME,
         verbose_name='Фамилия',
         blank=True,
     )
@@ -65,7 +66,7 @@ class CustomUser(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь',
         verbose_name_plural = 'Пользователи',
-        ordering = ('id',)
+        ordering = ('username',)
         constraints = [
             models.UniqueConstraint(
                 fields=['username', 'email'],
