@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, pagination, status, views, viewsets
 from rest_framework.decorators import action
@@ -22,10 +23,26 @@ class SignupView(views.APIView):
     def post(self, request):
         serializer = UserSignupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user, _ = User.objects.get_or_create(
-            username=serializer.validated_data.get('username'),
-            email=serializer.validated_data.get('email'),
-        )
+        username = serializer.validated_data.get('username')
+        email = serializer.validated_data.get('email')
+        # user, created = User.objects.get_or_create(
+        #     username=username, email=email
+        # )
+        try:
+            user, _ = User.objects.get_or_create(
+                username=username, email=email
+            )
+        except IntegrityError:
+            if User.objects.filter(username=username).first():
+                return Response(
+                    f'Имя пользователя {username} уже используется',
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if User.objects.filter(email=email).first():
+                return Response(
+                    f'email {email} уже используется',
+                    status=status.HTTP_400_BAD_REQUEST
+                )
         confirmation_code = default_token_generator.make_token(user)
         send_mail(
             subject='Код подтверждения',
@@ -62,9 +79,9 @@ class UserViewSet(viewsets.ModelViewSet):
             )
             serializer.is_valid(raise_exception=True)
             serializer.save(role=request.user.role)
-        else:
-            serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TokenView(views.APIView):
