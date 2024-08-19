@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.db import IntegrityError
 from rest_framework import serializers
+
+from .constants import MAX_LENGTH_EMAIL, MAX_LENGTH_NAME
+from .validators import username_me_validator
 
 User = get_user_model()
 
@@ -15,30 +17,31 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
-class UserSignupSerializer(UserSerializer):
+class UserSignupSerializer(serializers.Serializer):
 
-    def create(self, validated_data):
-        email = validated_data.get('email')
-        username = validated_data.get('username')
-        try:
-            user, _ = User.objects.get_or_create(username=username,
-                                                 email=email)
-        except IntegrityError:
-            if User.objects.filter(username=username).first():
-                raise serializers.ValidationError(
-                    f'Имя пользователя {username} уже используется'
-                )
-            else:
-                raise serializers.ValidationError(
-                    f'email {email} уже используется'
-                )
-        return user
+    email = serializers.EmailField(max_length=MAX_LENGTH_EMAIL, required=True)
+    username = serializers.CharField(
+        max_length=MAX_LENGTH_NAME,
+        required=True,
+        validators=(username_me_validator, UnicodeUsernameValidator()),
+    )
+
+    def validate(self, data):
+        username = User.objects.filter(username=data['username']).exists()
+        email = User.objects.filter(email=data['email']).exists()
+        if username and not email:
+            raise serializers.ValidationError(
+                f'email {email} уже используется')
+        elif not username and email:
+            raise serializers.ValidationError(
+                f'Имя пользователя {username} уже используется')
+        return data
 
 
 class TokenSerializer(serializers.Serializer):
     username = serializers.CharField(
-        max_length=128,
+        max_length=MAX_LENGTH_NAME,
         required=True,
         validators=(UnicodeUsernameValidator,)
     )
-    confirmation_code = serializers.CharField(required=True)
+    confirmation_code = serializers.CharField()
