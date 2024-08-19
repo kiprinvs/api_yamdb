@@ -1,7 +1,7 @@
 import datetime
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from review.models import Review, Comment, Category, Genre, Title, GenreTitle
+from reviews.models import Review, Comment, Category, Genre, Title, GenreTitle
 from django.shortcuts import get_object_or_404
 
 

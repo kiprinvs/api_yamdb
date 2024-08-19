@@ -3,12 +3,12 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.db.models import Avg
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
-from review.models import Review, Comment, Genre, Category, Title
+from reviews.models import Review, Comment, Genre, Category, Title
 from api.serializers import (ReviewSerializer, CommentSerializer,
                              GenreSerializer, CategorySerializer,
                              TitleSerializer)
 from api.permissions import IsAuthorOrModeratorOrReadOnly, AdminOrReadOnly
-from review.validators import validate_unique_review
+from reviews.validators import validate_unique_review
 
 
 class GenreViewSet(

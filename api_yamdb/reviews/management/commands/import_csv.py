@@ -3,7 +3,7 @@ import os
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from review.models import Category, Genre, Title, Review, Comment, GenreTitle
+from reviews.models import Category, Genre, Title, Review, Comment, GenreTitle
 from custom_user.models import CustomUser
 
 DATA_PATH = os.path.join(
