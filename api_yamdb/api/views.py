@@ -15,17 +15,18 @@ from .mixins import CategoryGenreMixin
 
 
 class CategoryViewSet(CategoryGenreMixin):
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
 
 
 class GenreViewSet(CategoryGenreMixin):
-    queryset = Genre.objects.all()
+    queryset = Genre.objects.all().order_by('name')
     serializer_class = GenreSerializer
 
 
-class TitleViewSet(viewsets.ModelViewSet):    
-    queryset = Title.objects.annotate(rating=Avg("reviews__score"))
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.annotate(
+        rating=Avg("reviews__score")).order_by('name')
     serializer_class = TitleSerializer
     permission_classes = (AdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
@@ -36,7 +37,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return TitleGetSerializer
-        return TitleSerializer    
+        return TitleSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
