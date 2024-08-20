@@ -71,7 +71,8 @@ class Command(BaseCommand):
                 except Title.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR(
-                            f"Произведение с id={row['title_id']} не существует."
+                            f"Произведение с id={row['title_id']} "
+                            "не существует."
                         )
                     )
                 except Genre.DoesNotExist:
@@ -104,7 +105,8 @@ class Command(BaseCommand):
                 except Title.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR(
-                            f"Произведение с id={row['title_id']} не существует."
+                            f"Произведение с id={row['title_id']} "
+                            "не существует."
                         )
                     )
 
