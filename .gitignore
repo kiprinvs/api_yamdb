@@ -1,4 +1,5 @@
 # Byte-compiled / optimized / DLL files
+migrations/
 __pycache__/
 *.py[cod]
 *$py.class
@@ -148,3 +149,5 @@ dmypy.json
 # папки со статикой и медиа
 media/
 
+# Игнорировать миграции Django
+*/migrations/*
