@@ -1,49 +1,44 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.db.models import Avg
 from rest_framework.pagination import PageNumberPagination
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from reviews.models import Review, Comment, Genre, Category, Title
 from api.serializers import (ReviewSerializer, CommentSerializer,
                              GenreSerializer, CategorySerializer,
-                             TitleSerializer)
+                             TitleSerializer, TitleGetSerializer)
 from api.permissions import IsAuthorOrModeratorOrReadOnly, AdminOrReadOnly
 from reviews.validators import validate_unique_review
+from .filters import TitleFilter
+from .mixins import CategoryGenreMixin
 
 
-class GenreViewSet(
-    AdminOrReadOnly,
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet
-):
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-
-
-class CategoryViewSet(
-    AdminOrReadOnly,
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet
-):
-    queryset = Category.objects.all()
+class CategoryViewSet(CategoryGenreMixin):
+    queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
 
 
-class TitleViewSet(viewsets.ModelViewSet):    
-    queryset = Title.objects.annotate(rating=Avg("reviews__score"))
+class GenreViewSet(CategoryGenreMixin):
+    queryset = Genre.objects.all().order_by('name')
+    serializer_class = GenreSerializer
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.annotate(
+        rating=Avg("reviews__score")).order_by('name')
     serializer_class = TitleSerializer
     permission_classes = (AdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
     ordering_fields = ("name", "year")
     http_method_names = ["get", "post", "patch", "delete"]
-    # pagination_class = PageNumberPagination
 
-    # def create(self, request, *args, **kwargs):        
-    #     return super().create(request, *args, **kwargs)
-        
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleGetSerializer
+        return TitleSerializer
+
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()

@@ -1,8 +1,5 @@
-import datetime
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
-from reviews.models import Review, Comment, Category, Genre, Title, GenreTitle
-from django.shortcuts import get_object_or_404
+from reviews.models import Review, Comment, Category, Genre, Title
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -19,48 +16,38 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ("name", "slug")
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    genre = GenreSerializer(many=True, read_only=True, required=False)
+class TitleGetSerializer(serializers.ModelSerializer):
+    genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
-
-    # genre = serializers.SlugRelatedField(
-    #     queryset=Genre.objects.all(), slug_field='slug', many=True
-    # )
-    # category = serializers.SlugRelatedField(
-    #     queryset=Category.objects.all(), slug_field='slug'
-    # )
     rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
         fields = (
-            "id",
-            "name",
-            "year",
-            "rating",
-            "description",
-            "genre",
-            "category",
+            'id', 'name', 'year', 'rating',
+            'description', 'genre', 'category'
         )
 
-    def validate(self, data):
-        if "year" in data:
-            if datetime.datetime.now().year < data["year"]:
-                raise ValidationError(
-                    'Год публикации не может быть больше текущего!')
-        return data
 
-    def create(self, validated_data):
-        data_dict = {**validated_data}
-        data_dict["category"] = get_object_or_404(
-            Category.objects, slug=self.initial_data["category"]
-        )
-        title = Title.objects.create(**data_dict)
-        genre_list = self.initial_data.getlist("genre")
-        for genre in genre_list:
-            current_genre = get_object_or_404(Genre.objects, slug=genre)
-            GenreTitle.objects.create(genre=current_genre, title=title)
-        return title
+class TitleSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Genre.objects.all(),
+        many=True
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all()
+    )
+
+    class Meta:
+        model = Title
+        fields = ('name', 'year', 'description',
+                  'genre', 'category')
+
+    def to_representation(self, title):
+        serializer = TitleGetSerializer(title)
+        return serializer.data
 
 
 class ReviewSerializer(serializers.ModelSerializer):
