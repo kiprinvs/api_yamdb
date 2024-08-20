@@ -5,15 +5,14 @@ from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from api.permissions import IsAdminOrReadOnly, IsAuthorOrModeratorOrReadOnly
-from api.serializers import (
+from .filters import TitleFilter
+from .mixins import CategoryGenreMixin
+from .permissions import IsAdminOrReadOnly, IsAuthorOrModeratorOrReadOnly
+from .serializers import (
     CategorySerializer, CommentSerializer,
     GenreSerializer, ReviewSerializer,
     TitleGetSerializer, TitleSerializer
 )
-
-from .filters import TitleFilter
-from .mixins import CategoryGenreMixin
 from reviews.models import Category, Comment, Genre, Review, Title
 from reviews.validators import validate_unique_review
 
