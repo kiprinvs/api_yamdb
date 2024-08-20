@@ -1,14 +1,16 @@
 import csv
 import os
 
-from django.core.management.base import BaseCommand
 from django.conf import settings
-from reviews.models import Category, Genre, Title, Review, Comment, GenreTitle
+from django.core.management.base import BaseCommand
+
 from custom_user.models import CustomUser
+from reviews.models import Category, Comment, Genre, GenreTitle, Review, Title
 
 DATA_PATH = os.path.join(
     settings.BASE_DIR, 'static', 'data'
 )
+
 
 class Command(BaseCommand):
 
@@ -17,7 +19,7 @@ class Command(BaseCommand):
         self.import_categories()
         self.import_genres()
         self.import_titles()
-        self.import_genre_titles()  # Новый метод для импорта связей жанр-произведение
+        self.import_genre_titles()
         self.import_reviews()
         self.import_comments()
         self.stdout.write('Данные были успешно загружены')
@@ -68,11 +70,15 @@ class Command(BaseCommand):
                     )
                 except Title.DoesNotExist:
                     self.stdout.write(
-                        self.style.ERROR(f"Title with id={row['title_id']} does not exist.")
+                        self.style.ERROR(
+                            f"Title with id={row['title_id']} does not exist."
+                        )
                     )
                 except Genre.DoesNotExist:
                     self.stdout.write(
-                        self.style.ERROR(f"Genre with id={row['genre_id']} does not exist.")
+                        self.style.ERROR(
+                            f"Genre with id={row['genre_id']} does not exist."
+                        )
                     )
 
     def import_reviews(self):
@@ -91,11 +97,15 @@ class Command(BaseCommand):
                     )
                 except CustomUser.DoesNotExist:
                     self.stdout.write(
-                        self.style.ERROR(f"User with id={row['author']} does not exist.")
+                        self.style.ERROR(
+                            f"User with id={row['author']} does not exist."
+                        )
                     )
                 except Title.DoesNotExist:
                     self.stdout.write(
-                        self.style.ERROR(f"Title with id={row['title_id']} does not exist.")
+                        self.style.ERROR(
+                            f"Title with id={row['title_id']} does not exist."
+                        )
                     )
 
     def import_comments(self):
@@ -113,11 +123,15 @@ class Command(BaseCommand):
                     )
                 except CustomUser.DoesNotExist:
                     self.stdout.write(
-                        self.style.ERROR(f"User with id={row['author']} does not exist.")
+                        self.style.ERROR(
+                            f"User with id={row['author']} does not exist."
+                        )
                     )
                 except Review.DoesNotExist:
                     self.stdout.write(
-                        self.style.ERROR(f"Review with id={row['review_id']} does not exist.")
+                        self.style.ERROR(
+                            f"Review with id={row['review_id']} does not exist"
+                        )
                     )
 
     def import_users(self):
