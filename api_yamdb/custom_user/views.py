@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django.core.mail import send_mail
-from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, pagination, status, views, viewsets
 from rest_framework.decorators import action
@@ -18,6 +17,7 @@ User = get_user_model()
 
 class SignupView(views.APIView):
     """Регистрация пользователя."""
+
     permission_classes = (AllowAny,)
 
     def post(self, request):
@@ -25,24 +25,9 @@ class SignupView(views.APIView):
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username')
         email = serializer.validated_data.get('email')
-        # user, created = User.objects.get_or_create(
-        #     username=username, email=email
-        # )
-        try:
-            user, _ = User.objects.get_or_create(
-                username=username, email=email
-            )
-        except IntegrityError:
-            if User.objects.filter(username=username).first():
-                return Response(
-                    f'Имя пользователя {username} уже используется',
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            if User.objects.filter(email=email).first():
-                return Response(
-                    f'email {email} уже используется',
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+        user, created = User.objects.get_or_create(
+            username=username, email=email
+        )
         confirmation_code = default_token_generator.make_token(user)
         send_mail(
             subject='Код подтверждения',
@@ -56,6 +41,7 @@ class SignupView(views.APIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     """Администрирование пользователей."""
+
     serializer_class = UserSerializer
     queryset = User.objects.all()
     pagination_class = pagination.PageNumberPagination
@@ -86,6 +72,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class TokenView(views.APIView):
     """Получение токена."""
+
     permission_classes = (AllowAny,)
 
     def post(self, request):

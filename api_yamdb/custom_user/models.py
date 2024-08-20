@@ -67,3 +67,9 @@ class CustomUser(AbstractUser):
         verbose_name = 'Пользователь',
         verbose_name_plural = 'Пользователи',
         ordering = ('id',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=['username', 'email'],
+                name='unique_username_email'
+            ),
+        ]
