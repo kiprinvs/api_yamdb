@@ -71,13 +71,13 @@ class Command(BaseCommand):
                 except Title.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR(
-                            f"Title with id={row['title_id']} does not exist."
+                            f"Произведение с id={row['title_id']} не существует."
                         )
                     )
                 except Genre.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR(
-                            f"Genre with id={row['genre_id']} does not exist."
+                            f"Жанр с id={row['genre_id']} не существует."
                         )
                     )
 
@@ -98,13 +98,13 @@ class Command(BaseCommand):
                 except CustomUser.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR(
-                            f"User with id={row['author']} does not exist."
+                            f"Пользователь с id={row['author']} не существует."
                         )
                     )
                 except Title.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR(
-                            f"Title with id={row['title_id']} does not exist."
+                            f"Произведение с id={row['title_id']} не существует."
                         )
                     )
 
@@ -124,13 +124,13 @@ class Command(BaseCommand):
                 except CustomUser.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR(
-                            f"User with id={row['author']} does not exist."
+                            f"Пользователь с id={row['author']} не существует."
                         )
                     )
                 except Review.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR(
-                            f"Review with id={row['review_id']} does not exist"
+                            f"Отзыв с id={row['review_id']} не существует."
                         )
                     )
 

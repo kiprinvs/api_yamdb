@@ -21,7 +21,8 @@ python3 -m pip install --upgrade pip
 pip install -r requirements.txt  
 
 
-4. Применение миграций  
+4. Применение миграций 
+python manage.py makemigrations 
 python manage.py migrate  
 
 
