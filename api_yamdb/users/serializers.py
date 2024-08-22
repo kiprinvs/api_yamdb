@@ -3,7 +3,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from rest_framework import serializers
 
 from .constants import MAX_LENGTH_EMAIL, MAX_LENGTH_NAME
-from .validators import username_me_validator
+from .validators import username_validator
 
 User = get_user_model()
 
@@ -23,18 +23,27 @@ class UserSignupSerializer(serializers.Serializer):
     username = serializers.CharField(
         max_length=MAX_LENGTH_NAME,
         required=True,
-        validators=(username_me_validator, UnicodeUsernameValidator()),
+        validators=(username_validator, UnicodeUsernameValidator()),
     )
 
     def validate(self, data):
-        username = User.objects.filter(username=data['username']).exists()
-        email = User.objects.filter(email=data['email']).exists()
-        if username and not email:
-            raise serializers.ValidationError(
-                f'email {email} уже используется')
-        elif not username and email:
-            raise serializers.ValidationError(
-                f'Имя пользователя {username} уже используется')
+        user_by_email = User.objects.filter(
+            email=data['email']
+        ).first()
+        user_by_username = User.objects.filter(
+            username=data['username']
+        ).first()
+        if user_by_email != user_by_username:
+            error_msg = {}
+            if user_by_email is not None:
+                error_msg['email'] = (
+                    f'Email "{data["email"]}" уже используется.'
+                )
+            if user_by_username is not None:
+                error_msg['username'] = (
+                    f'Имя пользователя "{data["username"]}" уже используется.'
+                )
+            raise serializers.ValidationError(error_msg)
         return data
 
 
@@ -42,6 +51,6 @@ class TokenSerializer(serializers.Serializer):
     username = serializers.CharField(
         max_length=MAX_LENGTH_NAME,
         required=True,
-        validators=(UnicodeUsernameValidator,)
+        validators=(username_validator, UnicodeUsernameValidator)
     )
     confirmation_code = serializers.CharField()

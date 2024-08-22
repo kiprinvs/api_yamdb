@@ -3,14 +3,14 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from .constants import MAX_LENGTH_EMAIL, MAX_LENGTH_NAME
-from .validators import username_me_validator
+from .constants import MAX_LENGTH_NAME
+from .validators import username_validator
 
 
-class CustomUser(AbstractUser):
+class User(AbstractUser):
     """Модель пользователя."""
 
-    class RoleForUsers(models.TextChoices):
+    class RoleChoice(models.TextChoices):
         USER = 'user', _('Пользователь')
         MODERATOR = 'moderator', _('Модератор')
         ADMIN = 'admin', _('Администратор')
@@ -19,10 +19,9 @@ class CustomUser(AbstractUser):
         max_length=MAX_LENGTH_NAME,
         unique=True,
         verbose_name='Имя пользователя',
-        validators=(username_me_validator, UnicodeUsernameValidator()),
+        validators=(username_validator, UnicodeUsernameValidator()),
     )
     email = models.EmailField(
-        max_length=MAX_LENGTH_EMAIL,
         verbose_name='Почта',
         unique=True,
     )
@@ -43,33 +42,26 @@ class CustomUser(AbstractUser):
     role = models.CharField(
         max_length=MAX_LENGTH_NAME,
         verbose_name='Роль',
-        choices=RoleForUsers.choices,
-        default=RoleForUsers.USER,
+        choices=RoleChoice.choices,
+        default=RoleChoice.USER,
         blank=True,
     )
-
-    @property
-    def is_moderator(self):
-        return self.role == self.RoleForUsers.MODERATOR
-
-    @property
-    def is_admin(self):
-        return (
-            self.role == self.RoleForUsers.ADMIN
-            or self.is_superuser
-            or self.is_staff
-        )
-
-    def __str__(self):
-        return self.username
 
     class Meta:
         verbose_name = 'Пользователь',
         verbose_name_plural = 'Пользователи',
-        ordering = ('id',)
-        constraints = [
-            models.UniqueConstraint(
-                fields=['username', 'email'],
-                name='unique_username_email'
-            ),
-        ]
+        ordering = ('username',)
+
+    def __str__(self):
+        return f'{self.username} - {self.email}'
+
+    @property
+    def is_moderator(self):
+        return self.role == self.RoleChoice.MODERATOR
+
+    @property
+    def is_admin(self):
+        return (
+            self.role == self.RoleChoice.ADMIN
+            or self.is_superuser
+        )

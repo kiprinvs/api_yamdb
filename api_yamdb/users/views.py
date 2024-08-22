@@ -9,8 +9,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
-from .permissions import IsAdmin
-from .serializers import TokenSerializer, UserSignupSerializer, UserSerializer
+from api.permissions import IsAdmin
+from users.serializers import (
+    TokenSerializer, UserSignupSerializer, UserSerializer
+)
 
 User = get_user_model()
 
@@ -25,7 +27,7 @@ class SignupView(views.APIView):
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username')
         email = serializer.validated_data.get('email')
-        user, created = User.objects.get_or_create(
+        user, _ = User.objects.get_or_create(
             username=username, email=email
         )
         confirmation_code = default_token_generator.make_token(user)

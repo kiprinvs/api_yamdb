@@ -8,7 +8,7 @@ from api.views import (
     ReviewViewSet,
     TitleViewSet
 )
-from custom_user.views import SignupView, TokenView, UserViewSet
+from users.views import SignupView, TokenView, UserViewSet
 
 router_v1 = DefaultRouter()
 
