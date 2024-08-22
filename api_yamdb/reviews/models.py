@@ -105,15 +105,21 @@ class Review(models.Model):
         verbose_name='Дата публикации'
     )
     score = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        validators=[
+            MinValueValidator(1, message='Оценка не может быть меньше 1.'),
+            MaxValueValidator(10, message='Оценка не может быть больше 10.')
+        ],
         verbose_name='Оценка'
     )
 
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
-        ordering = ['-pub_date']
-        unique_together = ['title', 'author']
+        ordering = ('-pub_date',)
+        constraints = [
+            models.UniqueConstraint(fields=('title', 'author'),
+                                    name='unique_review')
+        ]
 
     def __str__(self):
         return f'{self.author} - {self.title}'
@@ -143,7 +149,7 @@ class Comment(models.Model):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-        ordering = ['-pub_date']
+        ordering = ('-pub_date',)
 
     def __str__(self):
         return f'{self.author} - {self.review}'
