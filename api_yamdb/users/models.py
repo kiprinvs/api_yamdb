@@ -50,7 +50,7 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь',
         verbose_name_plural = 'Пользователи',
-        ordering = ('username',)
+        ordering = ('username', 'role')
 
     def __str__(self):
         return f'{self.username} - {self.email}'
