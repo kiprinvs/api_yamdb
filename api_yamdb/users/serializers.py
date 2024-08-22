@@ -37,11 +37,11 @@ class UserSignupSerializer(serializers.Serializer):
             error_msg = {}
             if user_by_email is not None:
                 error_msg['email'] = (
-                    f'Email "{data["email"]}" уже используется.'
+                    'Пользователь с таким email уже существует.'
                 )
             if user_by_username is not None:
                 error_msg['username'] = (
-                    f'Имя пользователя "{data["username"]}" уже используется.'
+                    'Пользователь с таким username уже существует.'
                 )
             raise serializers.ValidationError(error_msg)
         return data
@@ -51,6 +51,6 @@ class TokenSerializer(serializers.Serializer):
     username = serializers.CharField(
         max_length=MAX_LENGTH_NAME,
         required=True,
-        validators=(username_validator, UnicodeUsernameValidator)
+        validators=(username_validator, UnicodeUsernameValidator())
     )
     confirmation_code = serializers.CharField()
