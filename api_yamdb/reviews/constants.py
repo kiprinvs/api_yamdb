@@ -1,2 +1,2 @@
-"""Максимальная длина имени."""
-MAX_NAME_LENGTH: int = 256
+MAX_NAME_LENGTH = 256
+MAX_SLUG_LENGTH = 50
