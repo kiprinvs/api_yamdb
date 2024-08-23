@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
-from .constants import MAX_NAME_LENGTH
+from .constants import MAX_NAME_LENGTH, MAX_SLUG_LENGTH
 from .validators import validate_year
 
 User = get_user_model()
@@ -14,14 +14,16 @@ class Category(models.Model):
     name = models.CharField(
         max_length=MAX_NAME_LENGTH, verbose_name='Название'
     )
-    slug = models.SlugField(unique=True, verbose_name='Слаг')
+    slug = models.SlugField(max_length=MAX_SLUG_LENGTH,
+                            unique=True,
+                            verbose_name='Слаг')
 
     class Meta:
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return self.name
+        return f"Категория: {self.name} | слаг: {self.slug})"
 
 
 class Genre(models.Model):
@@ -30,14 +32,16 @@ class Genre(models.Model):
     name = models.CharField(
         max_length=MAX_NAME_LENGTH, verbose_name='Название'
     )
-    slug = models.SlugField(unique=True, verbose_name='Слаг')
+    slug = models.SlugField(max_length=MAX_SLUG_LENGTH,
+                            unique=True,
+                            verbose_name='Слаг')
 
     class Meta:
         verbose_name = 'жанр'
         verbose_name_plural = 'Жанры'
 
     def __str__(self):
-        return self.name
+        return f"Жанр: {self.name} | слаг: {self.slug})"
 
 
 class Title(models.Model):
@@ -52,7 +56,6 @@ class Title(models.Model):
     description = models.TextField(verbose_name='Описание', default='')
     genre = models.ManyToManyField(
         Genre,
-        through='GenreTitle',
         blank=True,
         verbose_name='Жанр',
     )
