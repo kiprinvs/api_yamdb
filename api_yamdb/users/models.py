@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from .constants import MAX_LENGTH_NAME
 from .validators import username_validator
@@ -10,9 +11,9 @@ class User(AbstractUser):
     """Модель пользователя."""
 
     class RoleChoice(models.TextChoices):
-        USER = 'user', 'Пользователь'
-        MODERATOR = 'moderator', 'Модератор'
-        ADMIN = 'admin', 'Администратор'
+        USER = 'user', _('Пользователь')
+        MODERATOR = 'moderator', _('Модератор')
+        ADMIN = 'admin', _('Администратор')
 
     username = models.CharField(
         max_length=MAX_LENGTH_NAME,
@@ -49,7 +50,7 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь',
         verbose_name_plural = 'Пользователи',
-        ordering = ('username',)
+        ordering = ('username', 'role')
 
     def __str__(self):
         return f'{self.username} - {self.email}'

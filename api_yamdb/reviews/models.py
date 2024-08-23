@@ -73,9 +73,7 @@ class Title(models.Model):
         ordering = ('year',)
 
     def __str__(self):
-        return (
-            f'Произведение {self.name} | жанр: {self.genre} | год: {self.year}'
-        )
+        return self.name
 
 
 class GenreTitle(models.Model):
