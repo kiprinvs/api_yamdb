@@ -2,7 +2,7 @@ from datetime import timedelta
 from pathlib import Path
 
 
-AUTH_USER_MODEL = 'custom_user.CustomUser'
+AUTH_USER_MODEL = 'users.User'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'api.apps.ApiConfig',
-    'custom_user.apps.CustomUserConfig',
+    'users.apps.UsersConfig',
     'reviews',
 ]
 

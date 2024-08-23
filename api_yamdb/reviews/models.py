@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
-from .constants import MAX_NAME_LENGTH
+from .constants import MAX_NAME_LENGTH, MAX_SLUG_LENGTH
 from .validators import validate_year
 
 User = get_user_model()
@@ -14,14 +14,16 @@ class Category(models.Model):
     name = models.CharField(
         max_length=MAX_NAME_LENGTH, verbose_name='Название'
     )
-    slug = models.SlugField(unique=True, verbose_name='Слаг')
+    slug = models.SlugField(max_length=MAX_SLUG_LENGTH,
+                            unique=True,
+                            verbose_name='Слаг')
 
     class Meta:
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return self.name
+        return f"Категория: {self.name} | слаг: {self.slug})"
 
 
 class Genre(models.Model):
@@ -30,14 +32,16 @@ class Genre(models.Model):
     name = models.CharField(
         max_length=MAX_NAME_LENGTH, verbose_name='Название'
     )
-    slug = models.SlugField(unique=True, verbose_name='Слаг')
+    slug = models.SlugField(max_length=MAX_SLUG_LENGTH,
+                            unique=True,
+                            verbose_name='Слаг')
 
     class Meta:
         verbose_name = 'жанр'
         verbose_name_plural = 'Жанры'
 
     def __str__(self):
-        return self.name
+        return f"Жанр: {self.name} | слаг: {self.slug})"
 
 
 class Title(models.Model):
@@ -52,7 +56,6 @@ class Title(models.Model):
     description = models.TextField(verbose_name='Описание', default='')
     genre = models.ManyToManyField(
         Genre,
-        through='GenreTitle',
         blank=True,
         verbose_name='Жанр',
     )
@@ -70,7 +73,9 @@ class Title(models.Model):
         ordering = ('year',)
 
     def __str__(self):
-        return self.name
+        return (
+            f'Произведение {self.name} | жанр: {self.genre} | год: {self.year}'
+        )
 
 
 class GenreTitle(models.Model):
@@ -105,15 +110,21 @@ class Review(models.Model):
         verbose_name='Дата публикации'
     )
     score = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        validators=[
+            MinValueValidator(1, message='Оценка не может быть меньше 1.'),
+            MaxValueValidator(10, message='Оценка не может быть больше 10.')
+        ],
         verbose_name='Оценка'
     )
 
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
-        ordering = ['-pub_date']
-        unique_together = ['title', 'author']
+        ordering = ('-pub_date',)
+        constraints = [
+            models.UniqueConstraint(fields=('title', 'author'),
+                                    name='unique_review')
+        ]
 
     def __str__(self):
         return f'{self.author} - {self.title}'
@@ -143,7 +154,7 @@ class Comment(models.Model):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-        ordering = ['-pub_date']
+        ordering = ('-pub_date',)
 
     def __str__(self):
         return f'{self.author} - {self.review}'

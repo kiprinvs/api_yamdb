@@ -3,14 +3,16 @@ from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, pagination, status, views, viewsets
+from rest_framework import filters, status, views, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
-from .permissions import IsAdmin
-from .serializers import TokenSerializer, UserSignupSerializer, UserSerializer
+from api.permissions import IsAdmin
+from users.serializers import (
+    TokenSerializer, UserSignupSerializer, UserSerializer
+)
 
 User = get_user_model()
 
@@ -25,7 +27,7 @@ class SignupView(views.APIView):
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username')
         email = serializer.validated_data.get('email')
-        user, created = User.objects.get_or_create(
+        user, _ = User.objects.get_or_create(
             username=username, email=email
         )
         confirmation_code = default_token_generator.make_token(user)
@@ -44,7 +46,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    pagination_class = pagination.PageNumberPagination
     permission_classes = (IsAdmin,)
     lookup_field = 'username'
     filter_backends = (filters.SearchFilter,)
