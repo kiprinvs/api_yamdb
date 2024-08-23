@@ -2,14 +2,16 @@ import csv
 import os
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from custom_user.models import CustomUser
 from reviews.models import Category, Comment, Genre, GenreTitle, Review, Title
 
 DATA_PATH = os.path.join(
     settings.BASE_DIR, 'static', 'data'
 )
+
+User = get_user_model()
 
 
 class Command(BaseCommand):
@@ -71,7 +73,8 @@ class Command(BaseCommand):
                 except Title.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR(
-                            f"Произведение с id={row['title_id']} не существует."
+                            f"Произведение с id={row['title_id']} "
+                            "не существует."
                         )
                     )
                 except Genre.DoesNotExist:
@@ -89,13 +92,13 @@ class Command(BaseCommand):
             for row in reader:
                 try:
                     title = Title.objects.get(id=row['title_id'])
-                    author = CustomUser.objects.get(id=row['author'])
+                    author = User.objects.get(id=row['author'])
                     Review.objects.create(
                         id=row['id'], title=title, text=row['text'],
                         author=author, score=row['score'],
                         pub_date=row['pub_date']
                     )
-                except CustomUser.DoesNotExist:
+                except User.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR(
                             f"Пользователь с id={row['author']} не существует."
@@ -104,7 +107,8 @@ class Command(BaseCommand):
                 except Title.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR(
-                            f"Произведение с id={row['title_id']} не существует."
+                            f"Произведение с id={row['title_id']} "
+                            "не существует."
                         )
                     )
 
@@ -116,12 +120,12 @@ class Command(BaseCommand):
             for row in reader:
                 try:
                     review = Review.objects.get(id=row['review_id'])
-                    author = CustomUser.objects.get(id=row['author'])
+                    author = User.objects.get(id=row['author'])
                     Comment.objects.create(
                         id=row['id'], review=review, text=row['text'],
                         author=author, pub_date=row['pub_date']
                     )
-                except CustomUser.DoesNotExist:
+                except User.DoesNotExist:
                     self.stdout.write(
                         self.style.ERROR(
                             f"Пользователь с id={row['author']} не существует."
@@ -140,7 +144,7 @@ class Command(BaseCommand):
         ) as file:
             reader = csv.DictReader(file)
             for row in reader:
-                CustomUser.objects.create(
+                User.objects.create(
                     id=row['id'], username=row['username'],
                     email=row['email'], first_name=row['first_name'],
                     last_name=row['last_name'], bio=row['bio'],
