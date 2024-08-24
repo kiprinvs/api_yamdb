@@ -113,6 +113,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
 EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
 
+BAD_USERNAMES = ['me']
+
 # Internationalization
 
 LANGUAGE_CODE = 'ru-RU'
