@@ -1,9 +1,7 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 
-from .constants import BAD_USERNAMES
-
-
 def username_validator(value):
-    if value in BAD_USERNAMES:
-        raise ValidationError('Недопустимое имя - {value}')
+    if value in settings.BAD_USERNAMES:
+        raise ValidationError(f'Недопустимое имя - {value}')
     return value
